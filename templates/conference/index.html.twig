@@ -9,8 +9,11 @@
 </style>
 
 <div class="example-wrapper">
-    {{ greet }}
-    <h1> {{ controller_name }}! ✅</h1>
-    <img src="/images/under-construction.gif" />
+    {% for conference in conferences %}
+        <h4>{{ conference }}</h4>
+            <p>
+                    <a href="{{ path('conference', { id: conference.id }) }}">View</a>
+            </p>
+    {% endfor %}
 </div>
 {% endblock %}
