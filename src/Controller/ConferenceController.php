@@ -14,13 +14,21 @@ use Twig\Environment;
 
 class ConferenceController extends AbstractController
 {
+    protected $conferenceRepository;
+    protected $commentRepository;
+
+    public function __construct(ConferenceRepository $conferenceRepository, CommentRepository $commentRepository)
+    {
+        $this->conferenceRepository = $conferenceRepository;
+        $this->commentRepository = $commentRepository;
+    }
     /**
      * @Route("/", name="homepage")
      */
-    public function index(LoggerInterface $logger, ConferenceRepository $conferenceRepository): Response
+    public function index(LoggerInterface $logger): Response
     {
         // retrieve the object from database
-        $conferences = $conferenceRepository->findAll();
+        $conferences = $this->conferenceRepository->findAll();
         if (!$conferences) {
             throw $this->createNotFoundException('The conferences does not exist');
             // the above is just a shortcut for:
@@ -56,10 +64,10 @@ class ConferenceController extends AbstractController
     /**
      * @Route("/conference/{id}", name="conference")
      */
-    public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
+    public function show(Request $request, Conference $conference): Response
     {
         $offset = max(0, $request->query->getInt('offset', 0));
-        $paginator = $commentRepository->getCommentPaginator($conference, $offset);
+        $paginator = $this->commentRepository->getCommentPaginator($conference, $offset);
 
         return $this->render('conference/show.html.twig', [
             'conference' => $conference,
